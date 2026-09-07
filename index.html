@@ -901,7 +901,7 @@ async function handleFileUpload(event) {
       - 'name': Subject name translated to English.
       - 'type': Type of lesson in English (e.g., 'lecture', 'seminar', 'physical education').
       - 'room': Room number, or '-' if none/empty.
-      - 'teacher': Teacher name and credentials.
+      - 'teacher': Teacher name ONLY (e.g., "Rysina E. I."). DO NOT include any titles, degrees, credentials, or positions (exclude terms like "Ph.D.", "Associate Professor", "к.т.н.", "к.п.н.", "доцент", etc.).
       - 'needsClarification': Set this to true ONLY IF the text is cut off, extremely blurry, or impossible to confidently read.
       - 'clarificationReason': A short string explaining what is hard to read (in English) (if needsClarification is true).
 
