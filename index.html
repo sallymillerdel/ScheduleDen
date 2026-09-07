@@ -14,11 +14,12 @@
     --text:       #e2e8f0;
     --muted:      #64748b;
     --accent:     #6c8ff8;
+    --accent-hover: #5a7de0;
     --accent2:    #a78bfa;
     --lec:        #f59e0b;
     --sem:        #34d399;
     --phys:       #f472b6;
-    --today-ring: #6c8ff8;
+    --danger:     #ef4444;
     --radius:     14px;
     --radius-sm:  8px;
   }
@@ -31,6 +32,7 @@
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    overflow-x: hidden;
   }
 
   /* ── Header ── */
@@ -41,6 +43,7 @@
     gap: 14px;
     border-bottom: 1px solid var(--border);
     background: var(--surface);
+    flex-wrap: wrap;
   }
   .header-icon {
     width: 36px; height: 36px;
@@ -51,152 +54,411 @@
   }
   .header-title { font-size: 17px; font-weight: 600; }
   .header-sub   { font-size: 12px; color: var(--muted); margin-top: 1px; }
-  .header-badge {
+  
+  .header-actions {
     margin-left: auto;
-    display: flex; align-items: center; gap: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
   }
-  .badge-text {
+
+  .btn {
     background: var(--surface2);
     border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 4px 12px;
-    font-size: 12px; color: var(--muted);
-    font-family: 'JetBrains Mono', monospace;
+    color: var(--text);
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: inherit;
   }
-  .settings-btn {
-    background: transparent; border: none; font-size: 18px;
-    cursor: pointer; padding: 4px; border-radius: 6px;
-    transition: background 0.2s;
+  .btn:hover {
+    background: var(--border);
   }
-  .settings-btn:hover { background: var(--surface2); }
+  .btn-primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+  .btn-primary:hover {
+    background: var(--accent-hover);
+    border-color: var(--accent-hover);
+  }
+  .btn-danger {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: rgba(239, 68, 68, 0.2);
+    color: var(--danger);
+  }
+  .btn-danger:hover {
+    background: rgba(239, 68, 68, 0.2);
+  }
 
   /* ── Layout ── */
   .layout {
-    flex: 1; display: grid; grid-template-columns: 340px 1fr; gap: 0; min-height: 0;
+    flex: 1;
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    gap: 0;
+    min-height: 0;
   }
+
+  /* ── Left panel ── */
   .left-panel {
-    background: var(--surface); border-right: 1px solid var(--border);
-    display: flex; flex-direction: column; padding: 24px 20px; gap: 20px; overflow-y: auto;
-  }
-  .right-panel {
-    display: flex; flex-direction: column; padding: 28px 32px; gap: 20px; overflow-y: auto;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    padding: 24px 20px;
+    gap: 20px;
+    overflow-y: auto;
   }
 
   /* ── Calendar ── */
-  .cal-header { display: flex; align-items: center; justify-content: space-between; padding: 0 4px; }
-  .cal-month { font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 6px; cursor: pointer; user-select: none; }
+  .cal-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 4px;
+  }
+  .cal-month {
+    font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 6px;
+    cursor: pointer; user-select: none;
+  }
   .cal-nav { display: flex; gap: 4px; }
   .cal-nav button {
-    width: 32px; height: 32px; background: var(--surface2); border: 1px solid var(--border);
-    border-radius: var(--radius-sm); color: var(--text); cursor: pointer; font-size: 14px;
-    display: grid; place-items: center; transition: background .15s, border-color .15s;
+    width: 32px; height: 32px;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); color: var(--text);
+    cursor: pointer; font-size: 14px;
+    display: grid; place-items: center;
+    transition: background .15s, border-color .15s;
   }
   .cal-nav button:hover { background: var(--border); }
-  .cal-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 2px; }
-  .cal-dow { text-align: center; font-size: 11px; font-weight: 600; color: var(--muted); padding: 4px 0 8px; letter-spacing: .04em; text-transform: uppercase; }
+
+  .cal-grid {
+    display: grid; grid-template-columns: repeat(7,1fr); gap: 2px;
+  }
+  .cal-dow {
+    text-align: center; font-size: 11px; font-weight: 600;
+    color: var(--muted); padding: 4px 0 8px;
+    letter-spacing: .04em; text-transform: uppercase;
+  }
   .cal-cell {
-    position: relative; display: flex; flex-direction: column; align-items: center;
-    border-radius: 10px; padding: 6px 2px 4px; cursor: pointer; user-select: none;
-    transition: background .15s; min-height: 52px;
+    position: relative;
+    display: flex; flex-direction: column; align-items: center;
+    border-radius: 10px; padding: 6px 2px 4px;
+    cursor: pointer; user-select: none;
+    transition: background .15s;
+    min-height: 52px;
   }
   .cal-cell:hover { background: var(--surface2); }
   .cal-cell.selected { background: var(--accent) !important; }
   .cal-cell.selected .cal-day-num { color: #fff !important; font-weight: 700; }
-  .cal-cell.today .cal-day-num { color: var(--accent); font-weight: 700; }
+  .cal-cell.today .cal-day-num {
+    background: transparent;
+    color: var(--accent);
+    font-weight: 700;
+  }
   .cal-cell.other-month { opacity: .3; pointer-events: none; }
   .cal-cell.no-classes { cursor: default; }
   .cal-cell.no-classes:hover { background: transparent; }
-  .cal-day-num { font-size: 14px; font-weight: 500; line-height: 1; color: var(--text); margin-bottom: 4px; }
-  .cal-dots { display: flex; gap: 2px; flex-wrap: wrap; justify-content: center; max-width: 28px; }
+
+  .cal-day-num {
+    font-size: 14px; font-weight: 500; line-height: 1;
+    color: var(--text); margin-bottom: 4px;
+  }
+  
+  .cal-dots {
+    display: flex; gap: 2px; flex-wrap: wrap; justify-content: center;
+    max-width: 28px;
+  }
   .cal-dot { width: 5px; height: 5px; border-radius: 50%; }
-  .dot-lec { background: var(--lec); } .dot-sem { background: var(--sem); } .dot-phys { background: var(--phys); }
+  .dot-lec  { background: var(--lec); }
+  .dot-sem  { background: var(--sem); }
+  .dot-phys { background: var(--phys); }
 
   /* ── Legend ── */
   .legend {
-    display: flex; flex-direction: column; gap: 8px; padding: 14px 16px;
-    background: var(--surface2); border-radius: var(--radius); border: 1px solid var(--border);
+    display: flex; flex-direction: column; gap: 8px;
+    padding: 14px 16px;
+    background: var(--surface2); border-radius: var(--radius);
+    border: 1px solid var(--border);
   }
   .legend-title { font-size: 11px; font-weight: 600; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; margin-bottom: 4px; }
-  .legend-row { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+  .legend-row {
+    display: flex; align-items: center; gap: 8px; font-size: 13px;
+  }
   .legend-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
 
-  /* ── Right Panel Details ── */
-  .day-header { display: flex; align-items: baseline; gap: 12px; }
-  .day-title { font-size: 24px; font-weight: 700; background: linear-gradient(90deg, var(--text), var(--muted)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-  .day-date { font-size: 14px; color: var(--muted); }
-  .day-count { margin-left: auto; background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 3px 12px; font-size: 12px; color: var(--muted); }
-
-  .classes-list { display: flex; flex-direction: column; gap: 14px; }
-  .class-card {
-    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
-    padding: 18px 20px; display: grid; grid-template-columns: 4px 1fr; gap: 16px;
-    transition: border-color .2s, transform .15s; animation: fadeUp .25s ease both;
+  /* ── Right panel ── */
+  .right-panel {
+    display: flex;
+    flex-direction: column;
+    padding: 28px 32px;
+    gap: 20px;
+    overflow-y: auto;
   }
-  .class-card:hover { border-color: var(--accent); transform: translateY(-1px); }
-  @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
-  
+
+  .day-header {
+    display: flex; align-items: baseline; gap: 12px;
+  }
+  .day-title {
+    font-size: 24px; font-weight: 700;
+    background: linear-gradient(90deg, var(--text), var(--muted));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .day-date { font-size: 14px; color: var(--muted); }
+  .day-count {
+    margin-left: auto;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px; padding: 3px 12px;
+    font-size: 12px; color: var(--muted);
+  }
+
+  /* ── Class cards ── */
+  .classes-list {
+    display: flex; flex-direction: column; gap: 14px;
+  }
+
+  .class-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    display: grid;
+    grid-template-columns: 4px 1fr;
+    gap: 16px;
+    transition: border-color .2s, transform .15s;
+    animation: fadeUp .25s ease both;
+  }
+  .class-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-1px);
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
   .card-stripe { border-radius: 4px; align-self: stretch; }
-  .stripe-lec { background: var(--lec); } .stripe-sem { background: var(--sem); } .stripe-phys { background: var(--phys); }
-  
+  .stripe-lec  { background: var(--lec); }
+  .stripe-sem  { background: var(--sem); }
+  .stripe-phys { background: var(--phys); }
+
   .card-body { display: flex; flex-direction: column; gap: 10px; }
-  .card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+
+  .card-top {
+    display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+  }
   .card-name { font-size: 16px; font-weight: 600; line-height: 1.3; flex: 1; }
-  .card-type { font-size: 11px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; padding: 3px 9px; border-radius: 6px; flex-shrink: 0; }
-  .type-lec { background: rgba(245,158,11,.15); color: var(--lec); }
-  .type-sem { background: rgba(52,211,153,.15); color: var(--sem); }
+  .card-type {
+    font-size: 11px; font-weight: 600;
+    letter-spacing: .05em; text-transform: uppercase;
+    padding: 3px 9px; border-radius: 6px; flex-shrink: 0;
+  }
+  .type-lec  { background: rgba(245,158,11,.15); color: var(--lec); }
+  .type-sem  { background: rgba(52,211,153,.15);  color: var(--sem); }
   .type-phys { background: rgba(244,114,182,.15); color: var(--phys); }
 
   .card-meta { display: flex; flex-wrap: wrap; gap: 10px; }
   .meta-item { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); }
   .meta-item svg { flex-shrink: 0; opacity: .7; }
   .meta-item strong { color: var(--text); font-weight: 500; }
+
   .card-time-badge {
-    display: inline-flex; align-items: center; gap: 6px; background: var(--surface2); border: 1px solid var(--border);
-    border-radius: var(--radius-sm); padding: 5px 10px; font-family: 'JetBrains Mono', monospace;
-    font-size: 13px; font-weight: 500; color: var(--text); align-self: flex-start;
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 5px 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px; font-weight: 500;
+    color: var(--text);
+    align-self: flex-start;
   }
-  .time-num { font-size: 11px; background: var(--border); border-radius: 4px; padding: 1px 5px; color: var(--muted); font-family: 'Outfit', sans-serif; }
+  .time-num {
+    font-size: 11px; background: var(--border); border-radius: 4px;
+    padding: 1px 5px; color: var(--muted); font-family: 'Outfit', sans-serif;
+  }
 
-  /* ── Empty State & Buttons ── */
-  .empty-state { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; color: var(--muted); animation: fadeUp .3s ease both; text-align: center; }
+  /* ── Empty state ── */
+  .empty-state {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 14px; color: var(--muted); text-align: center;
+    animation: fadeUp .3s ease both;
+  }
   .empty-icon { font-size: 52px; opacity: .4; }
-  .empty-text { font-size: 16px; font-weight: 500; }
-  .empty-sub { font-size: 13px; opacity: .6; max-width: 250px; margin-bottom: 10px; }
+  .empty-text { font-size: 16px; font-weight: 500; color: var(--text); }
+  .empty-sub  { font-size: 13px; opacity: .6; max-width: 300px; line-height: 1.5; }
+
+  /* ── Modals & Loaders ── */
+  .overlay {
+    position: fixed; inset: 0;
+    background: rgba(14, 17, 23, 0.85);
+    backdrop-filter: blur(4px);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 1000;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  .overlay.active { opacity: 1; pointer-events: auto; }
+
+  .loader-content {
+    display: flex; flex-direction: column; align-items: center; gap: 20px;
+  }
+  .spinner {
+    width: 40px; height: 40px;
+    border: 4px solid var(--surface2);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── Review Modal (Drag & Drop) ── */
+  .review-modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    width: 95%; max-width: 900px;
+    height: 85vh;
+    display: flex; flex-direction: column;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    transform: translateY(20px);
+    transition: transform 0.3s ease;
+  }
+  .overlay.active .review-modal { transform: translateY(0); }
   
-  .btn-import {
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    color: #fff; border: none; padding: 10px 20px; border-radius: var(--radius-sm);
-    font-weight: 600; font-family: 'Outfit', sans-serif; font-size: 15px;
-    cursor: pointer; transition: opacity 0.2s; display: flex; align-items: center; gap: 8px;
+  .modal-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+    flex-shrink: 0;
   }
-  .btn-import:hover { opacity: 0.9; }
+  .modal-title { font-size: 18px; font-weight: 600; display: flex; align-items: center; gap: 8px;}
+  .modal-title svg { color: var(--accent); }
+  
+  .review-layout {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+  }
+  
+  .review-sidebar {
+    width: 220px;
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    background: var(--surface);
+  }
+  
+  .week-tab {
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    color: var(--muted);
+    font-size: 14px; font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    user-select: none;
+  }
+  .week-tab:hover { background: var(--surface2); color: var(--text); }
+  .week-tab.active { background: var(--accent); color: #fff; }
+  
+  .review-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    background: var(--bg);
+  }
 
-  /* ── Settings Modal ── */
-  .modal-overlay {
-    position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(14, 17, 23, 0.8);
-    backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center;
-    z-index: 100; animation: fadeIn 0.2s ease;
+  .review-day {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
   }
-  .modal-content {
-    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
-    padding: 24px; width: 90%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+  
+  .review-day-title {
+    font-weight: 600; font-size: 15px; color: var(--text);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 8px; margin-bottom: 4px;
   }
-  .api-input {
-    width: 100%; padding: 12px; background: var(--surface2); border: 1px solid var(--border);
-    border-radius: var(--radius-sm); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 14px;
-    margin-bottom: 20px; outline: none; transition: border-color 0.2s;
-  }
-  .api-input:focus { border-color: var(--accent); }
-  .modal-actions { display: flex; justify-content: flex-end; gap: 12px; }
-  .modal-actions button { padding: 8px 16px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 500; cursor: pointer; border: none; }
-  .btn-cancel { background: transparent; color: var(--muted); }
-  .btn-cancel:hover { background: var(--surface2); color: var(--text); }
-  .btn-save { background: var(--accent); color: #fff; }
-  .btn-save:hover { opacity: 0.9; }
 
-  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-  ::-webkit-scrollbar { width: 5px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-  @media (max-width: 800px) { .layout { grid-template-columns: 1fr; } .left-panel { border-right: none; border-bottom: 1px solid var(--border); } }
+  .review-day-dropzone {
+    min-height: 48px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    border-radius: 8px;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .review-day-dropzone.drag-hover {
+    background: var(--surface2);
+    box-shadow: inset 0 0 0 1px var(--accent);
+  }
+
+  .review-lesson {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: grab;
+    user-select: none;
+    transition: transform 0.1s, opacity 0.1s;
+  }
+  .review-lesson:active { cursor: grabbing; }
+  .review-lesson.dragging { opacity: 0.4; transform: scale(0.98); }
+
+  .drag-handle {
+    color: var(--muted);
+    display: flex; align-items: center; justify-content: center;
+    padding-right: 4px;
+  }
+
+  .modal-footer {
+    padding: 16px 24px;
+    border-top: 1px solid var(--border);
+    display: flex; justify-content: flex-end; gap: 12px;
+    background: var(--surface2);
+    border-bottom-left-radius: var(--radius);
+    border-bottom-right-radius: var(--radius);
+    flex-shrink: 0;
+  }
+  
+  /* ── Custom Alert box ── */
+  #customAlertContainer {
+    padding: 24px;
+    font-size: 14px; line-height: 1.5; color: var(--text);
+  }
+
+  /* ── Scrollbar ── */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  @media (max-width: 800px) {
+    .layout { grid-template-columns: 1fr; }
+    .left-panel { border-right: none; border-bottom: 1px solid var(--border); }
+  }
 </style>
 </head>
 <body>
@@ -204,29 +466,22 @@
 <header>
   <div class="header-icon">📚</div>
   <div>
-    <div class="header-title">Schedule</div>
-    <div class="header-sub">Business Informatics · 2025–2026</div>
+    <div class="header-title">Class Schedule</div>
+    <div class="header-sub">Business Informatics</div>
   </div>
-  <div class="header-badge">
-    <div class="badge-text">2025–2026</div>
-    <button onclick="openSettings()" class="settings-btn" title="Settings">⚙️</button>
+  <div class="header-actions">
+    <button class="btn btn-danger" onclick="clearSchedule()" id="clearBtn" style="display:none;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+      Clear
+    </button>
+    <button class="btn btn-primary" onclick="triggerImport()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      Import from Photo
+    </button>
+    <button onclick="openSettings()" class="btn" title="Settings" style="padding: 8px;">⚙️</button>
+    <input type="file" id="uploadInput" accept="image/*" multiple style="display: none;" onchange="handleFileUpload(event)">
   </div>
 </header>
-
-<!-- Settings Modal -->
-<div id="settingsModal" class="modal-overlay" style="display: none;">
-  <div class="modal-content">
-    <h3 style="margin-bottom: 12px;">App Settings</h3>
-    <p style="font-size: 13px; color: var(--muted); margin-bottom: 20px;">
-      Enter your Gemini API key below to enable the "Import from Photo" feature. This key is stored securely in your browser and is never shared.
-    </p>
-    <input type="password" id="apiKeyInput" class="api-input" placeholder="AIzaSy...">
-    <div class="modal-actions">
-      <button onclick="closeSettings()" class="btn-cancel">Cancel</button>
-      <button onclick="saveApiKey()" class="btn-save">Save Key</button>
-    </div>
-  </div>
-</div>
 
 <div class="layout">
   <div class="left-panel">
@@ -234,8 +489,8 @@
       <div class="cal-header">
         <div class="cal-month" id="calMonthLabel">September 2026</div>
         <div class="cal-nav">
-          <button onclick="changeMonth(-1)" title="Back">&#8249;</button>
-          <button onclick="changeMonth(1)"  title="Forward">&#8250;</button>
+          <button onclick="changeMonth(-1)" title="Previous">&#8249;</button>
+          <button onclick="changeMonth(1)"  title="Next">&#8250;</button>
         </div>
       </div>
     </div>
@@ -249,20 +504,90 @@
   </div>
 
   <div class="right-panel" id="rightPanel">
-    <!-- Day view will render here -->
+    <div class="empty-state">
+      <div class="empty-icon">🗓️</div>
+      <div class="empty-text">Schedule is empty</div>
+      <div class="empty-sub">Click "Import from Photo" to automatically fill the calendar from a schedule screenshot.</div>
+    </div>
+  </div>
+</div>
+
+<!-- Loading Overlay -->
+<div class="overlay" id="loadingOverlay">
+  <div class="loader-content">
+    <div class="spinner"></div>
+    <div style="font-weight: 500;">Analyzing schedule with AI...</div>
+  </div>
+</div>
+
+<!-- Drag & Drop Review Modal -->
+<div class="overlay" id="reviewModal">
+  <div class="modal review-modal">
+    <div class="modal-header">
+      <div class="modal-title">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+          <polyline points="10 9 9 9 8 9"></polyline>
+        </svg>
+        Review Imported Schedule
+      </div>
+    </div>
+    <div class="review-layout">
+      <div class="review-sidebar" id="reviewSidebar">
+        <!-- Week tabs generated here -->
+      </div>
+      <div class="review-content" id="reviewDaysContainer">
+        <!-- Drag and drop days generated here -->
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeReviewModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveReviewedSchedule()">Confirm & Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Alert Modal (for errors) -->
+<div class="overlay" id="alertModal">
+  <div class="modal" style="width: auto; max-width: 400px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
+    <div id="customAlertContainer"></div>
+    <div class="modal-footer" style="background: transparent; border-top: none; padding-top: 0;">
+      <button class="btn btn-primary" onclick="document.getElementById('alertModal').classList.remove('active')">OK</button>
+    </div>
+  </div>
+</div>
+
+<!-- Settings Modal -->
+<div class="overlay" id="settingsModal">
+  <div class="modal" style="width: auto; max-width: 400px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
+    <div class="modal-header">
+      <div class="modal-title">⚙️ App Settings</div>
+    </div>
+    <div style="padding: 24px;">
+      <p style="font-size: 13px; color: var(--muted); margin-bottom: 16px;">
+        Enter your Gemini API key below to enable the "Import from Photo" feature. This key is stored securely in your browser.
+      </p>
+      <input type="password" id="apiKeyInput" style="width: 100%; padding: 10px; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-family: monospace;" placeholder="AIzaSy...">
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeSettings()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveApiKey()">Save Key</button>
+    </div>
   </div>
 </div>
 
 <script>
-// ── Settings & API Key Logic ──────────────────────────────────────────────
 let GEMINI_API_KEY = localStorage.getItem('geminiApiKey') || '';
 
 function openSettings() {
   document.getElementById('apiKeyInput').value = GEMINI_API_KEY;
-  document.getElementById('settingsModal').style.display = 'flex';
+  document.getElementById('settingsModal').classList.add('active');
 }
 function closeSettings() {
-  document.getElementById('settingsModal').style.display = 'none';
+  document.getElementById('settingsModal').classList.remove('active');
 }
 function saveApiKey() {
   GEMINI_API_KEY = document.getElementById('apiKeyInput').value.trim();
@@ -272,55 +597,61 @@ function saveApiKey() {
 
 function triggerImport() {
   if (!GEMINI_API_KEY) {
-    alert("Please add your Gemini API key in the settings (⚙️) first!");
+    showCustomAlert("Please add your Gemini API key in the settings (⚙️) first!");
     openSettings();
     return;
   }
-  // This is where we will add the file upload and Gemini API logic next
-  alert("Ready to connect to Gemini API!");
+  document.getElementById('uploadInput').click();
 }
 
-// ── English Localization ──────────────────────────────────────────────────
-const MONTHS_EN = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-const WEEKDAYS_FULL = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
-
-// ── State & Storage ───────────────────────────────────────────────────────
+// Start with an empty schedule
 let SCHEDULE = JSON.parse(localStorage.getItem('myUniversitySchedule')) || {};
-let viewYear  = 2026;
-let viewMonth = 8; // 8 = September
+let viewYear  = new Date().getFullYear();
+let viewMonth = new Date().getMonth(); 
 let selectedKey = null;
 
-// ── Helpers ───────────────────────────────────────────────────────────────
+// Import Review State
+let pendingLessons = [];
+let reviewWeeks = [];
+let currentReviewWeek = null;
+let draggedLessonId = null;
+
+// Standard periods to automatically assign times upon re-ordering
+const PERIODS = [
+  { start: "09:10", end: "10:40" },
+  { start: "11:00", end: "12:30" },
+  { start: "12:50", end: "14:20" },
+  { start: "14:40", end: "16:10" },
+  { start: "16:30", end: "18:00" },
+  { start: "18:20", end: "19:50" },
+  { start: "20:00", end: "21:30" }
+];
+
+const MONTHS_EN = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const DAYS_EN   = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+const WEEKDAYS_FULL = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+
 function dateKey(y,m,d){ return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`; }
 function todayKey(){
   const t = new Date();
   return dateKey(t.getFullYear(), t.getMonth(), t.getDate());
 }
-function normalizeDate(rawDate) {
-  if (rawDate.includes('.')) {
-    const [d, m, y] = rawDate.split('.');
-    return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
-  }
-  const parts = rawDate.split('-');
-  if (parts.length === 3) {
-    return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
-  }
-  return rawDate;
-}
+
 function typeInfo(type) {
-  const t = type.toLowerCase();
-  if (t.includes("lecture") || t === "лекция") return { cls: "lec",  label: "Lecture", stripe: "stripe-lec", badge: "type-lec" };
-  if (t.includes("phys") || t === "физкультура") return { cls: "phys", label: "Physical Ed", stripe: "stripe-phys", badge: "type-phys" };
-  return { cls: "sem",  label: "Seminar", stripe: "stripe-sem",  badge: "type-sem" };
+  const tLower = (type || "").toLowerCase();
+  if (tLower.includes("lecture") || tLower.includes("лекц") || tLower === "lec") return { cls: "lec",  label: "Lecture",        stripe: "stripe-lec",  badge: "type-lec" };
+  if (tLower.includes("phys") || tLower.includes("sport") || tLower.includes("физ")) return { cls: "phys", label: "Phys. Ed.",   stripe: "stripe-phys", badge: "type-phys" };
+  return                                                  { cls: "sem",  label: "Seminar",       stripe: "stripe-sem",  badge: "type-sem" };
 }
 
-// ── Calendar render ───────────────────────────────────────────────────────
 function buildCalendar() {
   const grid  = document.getElementById('calGrid');
   const label = document.getElementById('calMonthLabel');
   label.textContent = `${MONTHS_EN[viewMonth]} ${viewYear}`;
+
   grid.innerHTML = '';
 
+  // Day-of-week headers (Mon-first)
   const dowOrder = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
   dowOrder.forEach(d => {
     const el = document.createElement('div');
@@ -328,11 +659,14 @@ function buildCalendar() {
     grid.appendChild(el);
   });
 
-  const firstDay = new Date(viewYear, viewMonth, 1).getDay(); 
+  const firstDay = new Date(viewYear, viewMonth, 1).getDay(); // 0=Sun
   const daysInMonth = new Date(viewYear, viewMonth+1, 0).getDate();
-  const offset = (firstDay + 6) % 7;
-  const prevDays = new Date(viewYear, viewMonth, 0).getDate();
 
+  // Offset: Mon-first grid (0=Mon … 6=Sun)
+  const offset = (firstDay + 6) % 7;
+
+  // Previous month padding
+  const prevDays = new Date(viewYear, viewMonth, 0).getDate();
   for (let i = 0; i < offset; i++) {
     const el = document.createElement('div');
     el.className = 'cal-cell other-month';
@@ -341,28 +675,57 @@ function buildCalendar() {
   }
 
   const tk = todayKey();
+
   for (let d = 1; d <= daysInMonth; d++) {
-    const key = dateKey(viewYear, viewMonth, d);
+    const key     = dateKey(viewYear, viewMonth, d);
     const classes = SCHEDULE[key] || [];
     const isToday = key === tk;
-    const isSel = key === selectedKey;
+    const isSel   = key === selectedKey;
     const noClass = classes.length === 0;
 
     const cell = document.createElement('div');
     cell.className = `cal-cell${isToday ? ' today' : ''}${isSel ? ' selected' : ''}${noClass ? ' no-classes' : ''}`;
 
-    const hasLec  = classes.some(c => c.type.toLowerCase().includes('lecture') || c.type === 'лекция');
-    const hasSem  = classes.some(c => c.type.toLowerCase().includes('seminar') || c.type === 'семинар');
-    
+    // Dots data
+    const hasLec  = classes.some(c => {
+      const t = (c.type||"").toLowerCase();
+      return t.includes('lecture') || t.includes('лек');
+    });
+    const hasPhys = classes.some(c => {
+      const t = (c.type||"").toLowerCase();
+      return t.includes('phys') || t.includes('sport') || t.includes('физ');
+    });
+    // Consider everything else as seminar for dot rendering if it exists
+    const hasSem  = classes.some(c => {
+        const t = (c.type||"").toLowerCase();
+        return !t.includes('lecture') && !t.includes('лек') && !t.includes('phys') && !t.includes('sport') && !t.includes('физ');
+    });
+
     const dots = [
-      hasLec ? '<div class="cal-dot dot-lec"></div>' : '',
-      hasSem ? '<div class="cal-dot dot-sem"></div>' : '',
+      hasLec  ? '<div class="cal-dot dot-lec"></div>'  : '',
+      hasSem  ? '<div class="cal-dot dot-sem"></div>'  : '',
+      hasPhys ? '<div class="cal-dot dot-phys"></div>' : '',
     ].join('');
 
     cell.innerHTML = `<span class="cal-day-num">${d}</span><div class="cal-dots">${dots}</div>`;
-    if (!noClass) cell.addEventListener('click', () => selectDay(key));
+
+    if (!noClass) {
+      cell.addEventListener('click', () => selectDay(key));
+    }
     grid.appendChild(cell);
   }
+
+  // Fill remaining
+  const total = offset + daysInMonth;
+  const rem   = total % 7 === 0 ? 0 : 7 - (total % 7);
+  for (let d = 1; d <= rem; d++) {
+    const el = document.createElement('div');
+    el.className = 'cal-cell other-month';
+    el.innerHTML = `<span class="cal-day-num">${d}</span>`;
+    grid.appendChild(el);
+  }
+
+  document.getElementById('clearBtn').style.display = Object.keys(SCHEDULE).length > 0 ? 'inline-flex' : 'none';
 }
 
 function changeMonth(dir) {
@@ -372,24 +735,21 @@ function changeMonth(dir) {
   buildCalendar();
 }
 
-// ── Day view render ───────────────────────────────────────────────────────
 function selectDay(key) {
   selectedKey = key;
   buildCalendar();
-  const panel = document.getElementById('rightPanel');
+
+  const panel   = document.getElementById('rightPanel');
   const classes = SCHEDULE[key] || [];
 
   if (classes.length === 0) {
     panel.innerHTML = `
       <div class="empty-state">
-        <div class="empty-icon">🗓️</div>
-        <div class="empty-text">Schedule is empty</div>
-        <div class="empty-sub">Click below to automatically fill your calendar from a schedule screenshot.</div>
-        <button class="btn-import" onclick="triggerImport()">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-          Import from Photo
-        </button>
-      </div>`;
+        <div class="empty-icon">☕</div>
+        <div class="empty-text">No classes</div>
+        <div class="empty-sub">You can rest on this day.</div>
+      </div>
+    `;
     return;
   }
 
@@ -397,9 +757,11 @@ function selectDay(key) {
   const dt = new Date(y, m-1, d);
   const wd = WEEKDAYS_FULL[dt.getDay()];
   const dayStr = `${MONTHS_EN[m-1]} ${d}`;
+  const wdCap = wd.charAt(0).toUpperCase() + wd.slice(1);
 
   let cardsHtml = '';
-  classes.forEach((c, i) => {
+  // Sort classes by lesson number to ensure correct display order
+  classes.sort((a, b) => (a.n || 0) - (b.n || 0)).forEach((c, i) => {
     const ti = typeInfo(c.type);
     cardsHtml += `
       <div class="class-card" style="animation-delay:${i*0.06}s">
@@ -411,27 +773,31 @@ function selectDay(key) {
           </div>
           <div class="card-time-badge">
             <span class="time-num">#${c.n}</span>
-            ${c.start} &nbsp;–&nbsp; ${c.end}
+            ${c.start} &nbsp;&ndash;&nbsp; ${c.end}
           </div>
           <div class="card-meta">
             <div class="meta-item">
-              ${iconRoom()} Room&nbsp;<strong>${c.room || "TBA"}</strong>
+              ${iconRoom()}
+              Room&nbsp;<strong>${c.room || "—"}</strong>
             </div>
             <div class="meta-item">
-              ${iconPerson()} <strong>${c.teacher || "TBA"}</strong>
+              ${iconPerson()}
+              <strong>${c.teacher || "—"}</strong>
             </div>
           </div>
         </div>
       </div>`;
   });
 
+  const classCountText = classes.length === 1 ? 'class' : 'classes';
+
   panel.innerHTML = `
     <div class="day-header">
       <div>
-        <div class="day-title">${wd}</div>
+        <div class="day-title">${wdCap}</div>
         <div class="day-date">${dayStr}, ${y}</div>
       </div>
-      <div class="day-count">${classes.length} classes</div>
+      <div class="day-count">${classes.length} ${classCountText}</div>
     </div>
     <div class="classes-list">${cardsHtml}</div>`;
 }
@@ -443,22 +809,516 @@ function iconPerson() {
   return `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>`;
 }
 
-// ── Init ──────────────────────────────────────────────────────────────────
+function normalizeDateStr(dStr) {
+  if (!dStr) return null;
+  // Replace dots or slashes with hyphens
+  let clean = dStr.replace(/[\.\/]/g, '-');
+  const parts = clean.split('-');
+  
+  if (parts.length === 3) {
+    // If DD-MM-YYYY format
+    if (parts[0].length <= 2 && parts[2].length === 4) {
+       return `${parts[2]}-${String(Number(parts[1])).padStart(2, '0')}-${String(Number(parts[0])).padStart(2, '0')}`;
+    }
+    // If YYYY-MM-DD format
+    if (parts[0].length === 4) {
+       return `${parts[0]}-${String(Number(parts[1])).padStart(2, '0')}-${String(Number(parts[2])).padStart(2, '0')}`;
+    }
+  }
+  return clean; // Fallback
+}
+
+function normalizeTimeStr(tStr) {
+   if (!tStr) return tStr;
+   // Replace dots with colons and pad (e.g. "9.10" -> "09:10")
+   let clean = tStr.replace(/\./g, ':').trim();
+   let parts = clean.split(':');
+   if (parts.length === 2) {
+      return `${parts[0].padStart(2, '0')}:${parts[1].padStart(2, '0')}`;
+   }
+   return clean;
+}
+
+function getMonday(dateString) {
+  const [y,m,d] = dateString.split('-').map(Number);
+  const dt = new Date(y, m-1, d);
+  const day = dt.getDay();
+  const diff = dt.getDate() - day + (day === 0 ? -6 : 1);
+  dt.setDate(diff);
+  return dateKey(dt.getFullYear(), dt.getMonth(), dt.getDate());
+}
+
+function addDays(dateString, days) {
+  const [y,m,d] = dateString.split('-').map(Number);
+  const dt = new Date(y, m-1, d);
+  dt.setDate(dt.getDate() + days);
+  return dateKey(dt.getFullYear(), dt.getMonth(), dt.getDate());
+}
+
+function clearSchedule() {
+  SCHEDULE = {};
+  selectedKey = null;
+  localStorage.removeItem('myUniversitySchedule');
+  buildCalendar();
+  document.getElementById('rightPanel').innerHTML = `
+    <div class="empty-state">
+      <div class="empty-icon">🗓️</div>
+      <div class="empty-text">Schedule is empty</div>
+      <div class="empty-sub">Click "Import from Photo" to automatically fill the calendar.</div>
+    </div>
+  `;
+}
+
+async function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result.split(',')[1]);
+    reader.onerror = error => reject(error);
+  });
+}
+
+async function handleFileUpload(event) {
+  const files = event.target.files;
+  if (!files || files.length === 0) return;
+
+  const overlay = document.getElementById('loadingOverlay');
+  overlay.classList.add('active');
+
+  try {
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${GEMINI_API_KEY}`;
+
+    const prompt = `
+      Extract the university schedule from the provided image(s). 
+      Return a JSON array of lesson objects. 
+      The image typically has columns for Date, Lesson Number, Time, Subject/Teacher/Type, and Room.
+      
+      Requirements for fields:
+      - 'date': MUST be strictly in 'YYYY-MM-DD' format. (Convert DD.MM.YYYY to YYYY-MM-DD).
+      - 'n': integer lesson number (e.g. 1, 2, 3).
+      - 'start': start time (HH:MM).
+      - 'end': end time (HH:MM).
+      - 'name': Subject name translated to English.
+      - 'type': Type of lesson in English (e.g., 'lecture', 'seminar', 'physical education').
+      - 'room': Room number, or '-' if none/empty.
+      - 'teacher': Teacher name and credentials.
+      - 'needsClarification': Set this to true ONLY IF the text is cut off, extremely blurry, or impossible to confidently read.
+      - 'clarificationReason': A short string explaining what is hard to read (in English) (if needsClarification is true).
+
+      DO NOT include table headers or empty rows as lessons. Only extract actual scheduled classes.
+    `;
+
+    const parts = [{ text: prompt }];
+    for (const file of files) {
+      const base64 = await fileToBase64(file);
+      parts.push({
+        inlineData: { mimeType: file.type, data: base64 }
+      });
+    }
+
+    const payload = {
+      contents: [{ role: "user", parts: parts }],
+      generationConfig: {
+        maxOutputTokens: 8192,
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: "ARRAY",
+          items: {
+            type: "OBJECT",
+            properties: {
+              date: { type: "STRING", description: "YYYY-MM-DD" },
+              n: { type: "INTEGER", description: "Lesson number" },
+              start: { type: "STRING", description: "Start time (HH:MM)" },
+              end: { type: "STRING", description: "End time (HH:MM)" },
+              name: { type: "STRING" },
+              type: { type: "STRING" },
+              room: { type: "STRING" },
+              teacher: { type: "STRING" },
+              needsClarification: { type: "BOOLEAN" },
+              clarificationReason: { type: "STRING" }
+            },
+            required: ["date", "n", "start", "end", "name", "type", "room", "teacher"]
+          }
+        }
+      }
+    };
+
+    const response = await fetch(apiUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    const result = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(result.error?.message || "API request failed with status " + response.status);
+    }
+
+    let extractedData = [];
+    if (result.candidates && result.candidates.length > 0) {
+      let textResponse = result.candidates[0].content.parts[0].text || "";
+      
+      // Clean up potential markdown formatting even if responseMimeType is set
+      textResponse = textResponse.replace(/```json/gi, '').replace(/```/g, '').trim();
+      
+      if (!textResponse) {
+         throw new Error("The AI returned an empty response.");
+      }
+      
+      // Auto-repair truncated JSON arrays (happens when AI hits max token limit)
+      if (!textResponse.endsWith(']')) {
+        console.warn("JSON response was truncated, attempting to repair...");
+        
+        // Remove trailing commas and whitespace
+        textResponse = textResponse.replace(/,\s*$/, '');
+        
+        // If it was cut off mid-object, we fall back to the last complete object
+        if (!textResponse.endsWith('}')) {
+          const lastValidBrace = textResponse.lastIndexOf('}');
+          if (lastValidBrace !== -1) {
+             textResponse = textResponse.substring(0, lastValidBrace + 1);
+          } else {
+             // Failsafe if absolutely no valid objects exist
+             textResponse = '[]';
+          }
+        }
+        
+        // Close the array
+        textResponse += ']';
+      }
+
+      try {
+        extractedData = JSON.parse(textResponse);
+      } catch (err) {
+        console.error("Raw AI Response:", textResponse);
+        throw new Error("Failed to parse JSON data from the AI output.");
+      }
+    } else {
+      throw new Error("No valid data returned from the AI.");
+    }
+
+    processImportedData(extractedData);
+    
+  } catch (error) {
+    console.error("Error during import:", error);
+    showCustomAlert("An error occurred while analyzing the image:<br>" + error.message);
+  } finally {
+    overlay.classList.remove('active');
+    event.target.value = ''; // Reset file input
+  }
+}
+
+function processImportedData(lessons) {
+  if (!lessons || lessons.length === 0) {
+    showCustomAlert("No schedule data could be extracted from the image.");
+    return;
+  }
+
+  // Assign a unique ID for dragging and normalize properties
+  lessons.forEach(l => { 
+    l.id = Math.random().toString(36).substr(2, 9); 
+    
+    // Normalize date to ensure strict YYYY-MM-DD format (fixes silent UI failures)
+    if (l.date) {
+      l.date = normalizeDateStr(l.date);
+    }
+    if (l.start) l.start = normalizeTimeStr(l.start);
+    if (l.end) l.end = normalizeTimeStr(l.end);
+  });
+  
+  // Filter out any broken dates before continuing
+  pendingLessons = lessons.filter(l => l.date && l.date.includes('-') && !l.date.includes('NaN'));
+
+  if (pendingLessons.length === 0) {
+     showCustomAlert("Failed to parse valid dates from the extracted schedule.");
+     return;
+  }
+
+  // Determine all weeks present in the data to build the sidebar
+  let weeks = new Set();
+  pendingLessons.forEach(l => weeks.add(getMonday(l.date)));
+  
+  reviewWeeks = Array.from(weeks).sort();
+  if (reviewWeeks.length > 0) {
+    currentReviewWeek = reviewWeeks[0];
+  }
+
+  openReviewModal();
+}
+
+function openReviewModal() {
+  renderReviewSidebar();
+  renderReviewDays();
+  document.getElementById('reviewModal').classList.add('active');
+}
+
+function closeReviewModal() {
+  document.getElementById('reviewModal').classList.remove('active');
+  pendingLessons = []; // Reset on cancel
+}
+
+function selectReviewWeek(weekDateStr) {
+  currentReviewWeek = weekDateStr;
+  renderReviewSidebar();
+  renderReviewDays();
+}
+
+function renderReviewSidebar() {
+  const sidebar = document.getElementById('reviewSidebar');
+  sidebar.innerHTML = '';
+  
+  reviewWeeks.forEach(weekStart => {
+    const [y, m, d] = weekStart.split('-').map(Number);
+    const endStr = addDays(weekStart, 6);
+    const [ey, em, ed] = endStr.split('-').map(Number);
+    
+    const label = `${MONTHS_EN[m-1].substring(0,3)} ${d} — ${MONTHS_EN[em-1].substring(0,3)} ${ed}`;
+    
+    const tab = document.createElement('div');
+    tab.className = `week-tab ${weekStart === currentReviewWeek ? 'active' : ''}`;
+    tab.textContent = label;
+    tab.onclick = () => selectReviewWeek(weekStart);
+    sidebar.appendChild(tab);
+  });
+}
+
+function renderReviewDays() {
+  const container = document.getElementById('reviewDaysContainer');
+  container.innerHTML = '';
+  if (!currentReviewWeek) return;
+  
+  for(let i=0; i<7; i++) {
+    const targetDate = addDays(currentReviewWeek, i);
+    // Sort by period number (n)
+    const dayLessons = pendingLessons.filter(l => l.date === targetDate).sort((a,b) => a.n - b.n);
+    
+    const [y,m,d] = targetDate.split('-').map(Number);
+    const dt = new Date(y, m-1, d);
+    const wd = WEEKDAYS_FULL[dt.getDay()];
+    
+    const dayDiv = document.createElement('div');
+    dayDiv.className = 'review-day';
+    
+    const titleDiv = document.createElement('div');
+    titleDiv.className = 'review-day-title';
+    titleDiv.textContent = `${wd}, ${MONTHS_EN[m-1]} ${d}`;
+    dayDiv.appendChild(titleDiv);
+    
+    const dropzone = document.createElement('div');
+    dropzone.className = 'review-day-dropzone';
+    dropzone.dataset.date = targetDate;
+    
+    dayLessons.forEach(l => {
+       const lDiv = document.createElement('div');
+       lDiv.className = 'review-lesson';
+       lDiv.draggable = true;
+       lDiv.dataset.id = l.id;
+       
+       lDiv.innerHTML = `
+          <div class="drag-handle">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg>
+          </div>
+          <div style="width: 55px; font-size: 11px; color: var(--muted); text-align: center;">
+            <div style="font-weight: 600; font-size: 13px; color: var(--text);">Period ${l.n}</div>
+            ${l.start}
+          </div>
+          <div style="flex: 1;">
+            <div style="font-size: 14px; font-weight: 500; color: var(--text);">${l.name}</div>
+            <div style="font-size: 12px; color: var(--muted); margin-top: 2px;">${l.type} &nbsp;•&nbsp; Rm ${l.room} &nbsp;•&nbsp; ${l.teacher}</div>
+          </div>
+          <button class="btn btn-danger" style="padding: 6px; font-size: 0;" onclick="removePendingLesson('${l.id}')" title="Discard">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+       `;
+       
+       lDiv.addEventListener('dragstart', (e) => onDragStart(e, l.id));
+       lDiv.addEventListener('dragend', onDragEnd);
+       dropzone.appendChild(lDiv);
+    });
+    
+    // Placeholder to allow dropping onto completely empty days
+    if (dayLessons.length === 0) {
+       const emptyDiv = document.createElement('div');
+       emptyDiv.style.color = 'var(--muted)';
+       emptyDiv.style.fontSize = '13px';
+       emptyDiv.style.textAlign = 'center';
+       emptyDiv.style.padding = '12px 0';
+       emptyDiv.style.pointerEvents = 'none'; // ignore for drop calculation
+       emptyDiv.textContent = 'Drag classes here';
+       dropzone.appendChild(emptyDiv);
+    }
+    
+    dropzone.addEventListener('dragover', onDragOver);
+    dropzone.addEventListener('dragleave', onDragLeave);
+    dropzone.addEventListener('drop', (e) => onDrop(e, targetDate));
+    
+    dayDiv.appendChild(dropzone);
+    container.appendChild(dayDiv);
+  }
+}
+
+function onDragStart(e, id) {
+  draggedLessonId = id;
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', id);
+  setTimeout(() => e.target.classList.add('dragging'), 0);
+}
+
+function onDragEnd(e) {
+  e.target.classList.remove('dragging');
+  draggedLessonId = null;
+  document.querySelectorAll('.drag-hover').forEach(el => el.classList.remove('drag-hover'));
+}
+
+function onDragOver(e) {
+  e.preventDefault(); 
+  e.currentTarget.classList.add('drag-hover');
+}
+
+function onDragLeave(e) {
+  e.currentTarget.classList.remove('drag-hover');
+}
+
+function getDragAfterElement(container, y) {
+  const draggableElements = [...container.querySelectorAll('.review-lesson:not(.dragging)')];
+  return draggableElements.reduce((closest, child) => {
+    const box = child.getBoundingClientRect();
+    const offset = y - box.top - box.height / 2;
+    if (offset < 0 && offset > closest.offset) {
+      return { offset: offset, element: child };
+    } else {
+      return closest;
+    }
+  }, { offset: Number.NEGATIVE_INFINITY }).element;
+}
+
+function onDrop(e, targetDate) {
+  e.preventDefault();
+  const dropZone = e.currentTarget;
+  dropZone.classList.remove('drag-hover');
+
+  const lesson = pendingLessons.find(l => l.id === draggedLessonId);
+  if (!lesson) return;
+
+  const afterElement = getDragAfterElement(dropZone, e.clientY);
+  
+  // Remove from old state
+  pendingLessons = pendingLessons.filter(l => l.id !== draggedLessonId);
+  
+  // Get all target day lessons
+  let dayLessons = pendingLessons.filter(l => l.date === targetDate).sort((a,b) => a.n - b.n);
+  
+  // Insert at the dragged position
+  if (afterElement == null) {
+    dayLessons.push(lesson);
+  } else {
+    const afterId = afterElement.dataset.id;
+    const afterIndex = dayLessons.findIndex(l => l.id === afterId);
+    dayLessons.splice(afterIndex, 0, lesson);
+  }
+  
+  // Re-assign periods based on new order
+  dayLessons.forEach((l, index) => {
+    l.n = index + 1;
+    l.date = targetDate;
+    if (PERIODS[index]) {
+      l.start = PERIODS[index].start;
+      l.end = PERIODS[index].end;
+    }
+  });
+  
+  // Update state and re-render
+  pendingLessons = pendingLessons.filter(l => l.date !== targetDate).concat(dayLessons);
+  renderReviewDays();
+}
+
+function removePendingLesson(id) {
+  pendingLessons = pendingLessons.filter(l => l.id !== id);
+  renderReviewDays();
+}
+
+function saveReviewedSchedule() {
+  closeReviewModal();
+  commitLessonsToSchedule(pendingLessons);
+}
+
+function commitLessonsToSchedule(lessons) {
+  let updatedCount = 0;
+  lessons.forEach(l => {
+    if (!SCHEDULE[l.date]) {
+       SCHEDULE[l.date] = [];
+    }
+    
+    // Clean up temporary ID
+    delete l.id;
+    
+    // Add only if not duplicate
+    const isDuplicate = SCHEDULE[l.date].some(existing => 
+       existing.n === l.n && existing.name === l.name
+    );
+    
+    if (!isDuplicate) {
+       SCHEDULE[l.date].push(l);
+       updatedCount++;
+    }
+  });
+
+  localStorage.setItem('myUniversitySchedule', JSON.stringify(SCHEDULE));
+
+  if (lessons.length > 0) {
+    const sortedDates = [...new Set(lessons.map(l => l.date))].sort();
+    const firstDate = sortedDates[0];
+    const [fy, fm] = firstDate.split('-').map(Number);
+    
+    viewYear = fy;
+    viewMonth = fm - 1; 
+    
+    buildCalendar();
+    selectDay(firstDate);
+    
+    showToast(`Successfully saved ${updatedCount} classes to your schedule!`);
+  } else {
+    buildCalendar();
+  }
+}
+
+function showToast(msg) {
+  let toast = document.getElementById('saveToast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'saveToast';
+    toast.style.cssText = 'position:fixed; bottom:24px; right:24px; background:var(--sem); color:#000; padding:12px 20px; border-radius:var(--radius-sm); font-weight:600; box-shadow:0 10px 20px rgba(0,0,0,0.2); transform:translateY(100px); opacity:0; transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index:9999;';
+    document.body.appendChild(toast);
+  }
+  toast.textContent = msg;
+  
+  // Trigger animation
+  requestAnimationFrame(() => {
+    toast.style.transform = 'translateY(0)';
+    toast.style.opacity = '1';
+  });
+  
+  // Hide after 3.5 seconds
+  setTimeout(() => {
+    toast.style.transform = 'translateY(100px)';
+    toast.style.opacity = '0';
+  }, 3500);
+}
+
+function showCustomAlert(msg) {
+  document.getElementById('customAlertContainer').innerHTML = msg;
+  document.getElementById('alertModal').classList.add('active');
+}
+
 buildCalendar();
+
+// Default UI view for empty schedule
 const tk = todayKey();
 if (SCHEDULE[tk]) {
   selectDay(tk);
-} else {
-  const firstKey = Object.keys(SCHEDULE).sort()[0];
-  if (firstKey) {
-    const [fy,fm] = firstKey.split('-').map(Number);
-    viewYear = fy; viewMonth = fm-1;
-    buildCalendar();
-    selectDay(firstKey);
-  } else {
-    selectDay(tk);
-  }
 }
+
 </script>
 </body>
 </html>
