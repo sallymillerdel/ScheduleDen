@@ -544,7 +544,7 @@
       </div>
     </div>
     <div class="modal-footer">
-      <button class="btn" onclick="closeReviewModal()">Cancel</button>
+      <button class="btn" onclick="cancelReview()">Cancel</button>
       <button class="btn btn-primary" onclick="saveReviewedSchedule()">Confirm & Save</button>
     </div>
   </div>
@@ -1055,7 +1055,11 @@ function openReviewModal() {
 
 function closeReviewModal() {
   document.getElementById('reviewModal').classList.remove('active');
-  pendingLessons = []; // Reset on cancel
+}
+
+function cancelReview() {
+  closeReviewModal();
+  pendingLessons = []; // Reset only on explicit cancel
 }
 
 function selectReviewWeek(weekDateStr) {
@@ -1240,7 +1244,8 @@ function removePendingLesson(id) {
 
 function saveReviewedSchedule() {
   closeReviewModal();
-  commitLessonsToSchedule(pendingLessons);
+  commitLessonsToSchedule(pendingLessons); // Save the data first
+  pendingLessons = []; // Clear the temporary list AFTER saving!
 }
 
 function commitLessonsToSchedule(lessons) {
