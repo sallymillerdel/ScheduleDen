@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Schedule · BI-2023</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:         #0e1117;
+    --surface:    #161b27;
+    --surface2:   #1e2535;
+    --border:     #252d42;
+    --text:       #e2e8f0;
+    --muted:      #64748b;
+    --accent:     #6c8ff8;
+    --accent2:    #a78bfa;
+    --lec:        #f59e0b;
+    --sem:        #34d399;
+    --phys:       #f472b6;
+    --today-ring: #6c8ff8;
+    --radius:     14px;
+    --radius-sm:  8px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Outfit', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── Header ── */
+  header {
+    padding: 16px 28px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+  .header-icon {
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 10px;
+    display: grid; place-items: center;
+    font-size: 18px; flex-shrink: 0;
+  }
+  .header-title { font-size: 17px; font-weight: 600; }
+  .header-sub   { font-size: 12px; color: var(--muted); margin-top: 1px; }
+  .header-badge {
+    margin-left: auto;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .badge-text {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 12px; color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .settings-btn {
+    background: transparent; border: none; font-size: 18px;
+    cursor: pointer; padding: 4px; border-radius: 6px;
+    transition: background 0.2s;
+  }
+  .settings-btn:hover { background: var(--surface2); }
+
+  /* ── Layout ── */
+  .layout {
+    flex: 1; display: grid; grid-template-columns: 340px 1fr; gap: 0; min-height: 0;
+  }
+  .left-panel {
+    background: var(--surface); border-right: 1px solid var(--border);
+    display: flex; flex-direction: column; padding: 24px 20px; gap: 20px; overflow-y: auto;
+  }
+  .right-panel {
+    display: flex; flex-direction: column; padding: 28px 32px; gap: 20px; overflow-y: auto;
+  }
+
+  /* ── Calendar ── */
+  .cal-header { display: flex; align-items: center; justify-content: space-between; padding: 0 4px; }
+  .cal-month { font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 6px; cursor: pointer; user-select: none; }
+  .cal-nav { display: flex; gap: 4px; }
+  .cal-nav button {
+    width: 32px; height: 32px; background: var(--surface2); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); color: var(--text); cursor: pointer; font-size: 14px;
+    display: grid; place-items: center; transition: background .15s, border-color .15s;
+  }
+  .cal-nav button:hover { background: var(--border); }
+  .cal-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 2px; }
+  .cal-dow { text-align: center; font-size: 11px; font-weight: 600; color: var(--muted); padding: 4px 0 8px; letter-spacing: .04em; text-transform: uppercase; }
+  .cal-cell {
+    position: relative; display: flex; flex-direction: column; align-items: center;
+    border-radius: 10px; padding: 6px 2px 4px; cursor: pointer; user-select: none;
+    transition: background .15s; min-height: 52px;
+  }
+  .cal-cell:hover { background: var(--surface2); }
+  .cal-cell.selected { background: var(--accent) !important; }
+  .cal-cell.selected .cal-day-num { color: #fff !important; font-weight: 700; }
+  .cal-cell.today .cal-day-num { color: var(--accent); font-weight: 700; }
+  .cal-cell.other-month { opacity: .3; pointer-events: none; }
+  .cal-cell.no-classes { cursor: default; }
+  .cal-cell.no-classes:hover { background: transparent; }
+  .cal-day-num { font-size: 14px; font-weight: 500; line-height: 1; color: var(--text); margin-bottom: 4px; }
+  .cal-dots { display: flex; gap: 2px; flex-wrap: wrap; justify-content: center; max-width: 28px; }
+  .cal-dot { width: 5px; height: 5px; border-radius: 50%; }
+  .dot-lec { background: var(--lec); } .dot-sem { background: var(--sem); } .dot-phys { background: var(--phys); }
+
+  /* ── Legend ── */
+  .legend {
+    display: flex; flex-direction: column; gap: 8px; padding: 14px 16px;
+    background: var(--surface2); border-radius: var(--radius); border: 1px solid var(--border);
+  }
+  .legend-title { font-size: 11px; font-weight: 600; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; margin-bottom: 4px; }
+  .legend-row { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+
+  /* ── Right Panel Details ── */
+  .day-header { display: flex; align-items: baseline; gap: 12px; }
+  .day-title { font-size: 24px; font-weight: 700; background: linear-gradient(90deg, var(--text), var(--muted)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .day-date { font-size: 14px; color: var(--muted); }
+  .day-count { margin-left: auto; background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 3px 12px; font-size: 12px; color: var(--muted); }
+
+  .classes-list { display: flex; flex-direction: column; gap: 14px; }
+  .class-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 18px 20px; display: grid; grid-template-columns: 4px 1fr; gap: 16px;
+    transition: border-color .2s, transform .15s; animation: fadeUp .25s ease both;
+  }
+  .class-card:hover { border-color: var(--accent); transform: translateY(-1px); }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  
+  .card-stripe { border-radius: 4px; align-self: stretch; }
+  .stripe-lec { background: var(--lec); } .stripe-sem { background: var(--sem); } .stripe-phys { background: var(--phys); }
+  
+  .card-body { display: flex; flex-direction: column; gap: 10px; }
+  .card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+  .card-name { font-size: 16px; font-weight: 600; line-height: 1.3; flex: 1; }
+  .card-type { font-size: 11px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; padding: 3px 9px; border-radius: 6px; flex-shrink: 0; }
+  .type-lec { background: rgba(245,158,11,.15); color: var(--lec); }
+  .type-sem { background: rgba(52,211,153,.15); color: var(--sem); }
+  .type-phys { background: rgba(244,114,182,.15); color: var(--phys); }
+
+  .card-meta { display: flex; flex-wrap: wrap; gap: 10px; }
+  .meta-item { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); }
+  .meta-item svg { flex-shrink: 0; opacity: .7; }
+  .meta-item strong { color: var(--text); font-weight: 500; }
+  .card-time-badge {
+    display: inline-flex; align-items: center; gap: 6px; background: var(--surface2); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); padding: 5px 10px; font-family: 'JetBrains Mono', monospace;
+    font-size: 13px; font-weight: 500; color: var(--text); align-self: flex-start;
+  }
+  .time-num { font-size: 11px; background: var(--border); border-radius: 4px; padding: 1px 5px; color: var(--muted); font-family: 'Outfit', sans-serif; }
+
+  /* ── Empty State & Buttons ── */
+  .empty-state { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; color: var(--muted); animation: fadeUp .3s ease both; text-align: center; }
+  .empty-icon { font-size: 52px; opacity: .4; }
+  .empty-text { font-size: 16px; font-weight: 500; }
+  .empty-sub { font-size: 13px; opacity: .6; max-width: 250px; margin-bottom: 10px; }
+  
+  .btn-import {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #fff; border: none; padding: 10px 20px; border-radius: var(--radius-sm);
+    font-weight: 600; font-family: 'Outfit', sans-serif; font-size: 15px;
+    cursor: pointer; transition: opacity 0.2s; display: flex; align-items: center; gap: 8px;
+  }
+  .btn-import:hover { opacity: 0.9; }
+
+  /* ── Settings Modal ── */
+  .modal-overlay {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(14, 17, 23, 0.8);
+    backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center;
+    z-index: 100; animation: fadeIn 0.2s ease;
+  }
+  .modal-content {
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 24px; width: 90%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+  }
+  .api-input {
+    width: 100%; padding: 12px; background: var(--surface2); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 14px;
+    margin-bottom: 20px; outline: none; transition: border-color 0.2s;
+  }
+  .api-input:focus { border-color: var(--accent); }
+  .modal-actions { display: flex; justify-content: flex-end; gap: 12px; }
+  .modal-actions button { padding: 8px 16px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 500; cursor: pointer; border: none; }
+  .btn-cancel { background: transparent; color: var(--muted); }
+  .btn-cancel:hover { background: var(--surface2); color: var(--text); }
+  .btn-save { background: var(--accent); color: #fff; }
+  .btn-save:hover { opacity: 0.9; }
+
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  ::-webkit-scrollbar { width: 5px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+  @media (max-width: 800px) { .layout { grid-template-columns: 1fr; } .left-panel { border-right: none; border-bottom: 1px solid var(--border); } }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-icon">📚</div>
+  <div>
+    <div class="header-title">Schedule</div>
+    <div class="header-sub">Business Informatics · 2025–2026</div>
+  </div>
+  <div class="header-badge">
+    <div class="badge-text">2025–2026</div>
+    <button onclick="openSettings()" class="settings-btn" title="Settings">⚙️</button>
+  </div>
+</header>
+
+<!-- Settings Modal -->
+<div id="settingsModal" class="modal-overlay" style="display: none;">
+  <div class="modal-content">
+    <h3 style="margin-bottom: 12px;">App Settings</h3>
+    <p style="font-size: 13px; color: var(--muted); margin-bottom: 20px;">
+      Enter your Gemini API key below to enable the "Import from Photo" feature. This key is stored securely in your browser and is never shared.
+    </p>
+    <input type="password" id="apiKeyInput" class="api-input" placeholder="AIzaSy...">
+    <div class="modal-actions">
+      <button onclick="closeSettings()" class="btn-cancel">Cancel</button>
+      <button onclick="saveApiKey()" class="btn-save">Save Key</button>
+    </div>
+  </div>
+</div>
+
+<div class="layout">
+  <div class="left-panel">
+    <div>
+      <div class="cal-header">
+        <div class="cal-month" id="calMonthLabel">September 2026</div>
+        <div class="cal-nav">
+          <button onclick="changeMonth(-1)" title="Back">&#8249;</button>
+          <button onclick="changeMonth(1)"  title="Forward">&#8250;</button>
+        </div>
+      </div>
+    </div>
+    <div class="cal-grid" id="calGrid"></div>
+    <div class="legend">
+      <div class="legend-title">Legend</div>
+      <div class="legend-row"><div class="legend-dot" style="background:var(--lec)"></div>Lecture</div>
+      <div class="legend-row"><div class="legend-dot" style="background:var(--sem)"></div>Seminar</div>
+      <div class="legend-row"><div class="legend-dot" style="background:var(--phys)"></div>Physical Education</div>
+    </div>
+  </div>
+
+  <div class="right-panel" id="rightPanel">
+    <!-- Day view will render here -->
+  </div>
+</div>
+
+<script>
+// ── Settings & API Key Logic ──────────────────────────────────────────────
+let GEMINI_API_KEY = localStorage.getItem('geminiApiKey') || '';
+
+function openSettings() {
+  document.getElementById('apiKeyInput').value = GEMINI_API_KEY;
+  document.getElementById('settingsModal').style.display = 'flex';
+}
+function closeSettings() {
+  document.getElementById('settingsModal').style.display = 'none';
+}
+function saveApiKey() {
+  GEMINI_API_KEY = document.getElementById('apiKeyInput').value.trim();
+  localStorage.setItem('geminiApiKey', GEMINI_API_KEY);
+  closeSettings();
+}
+
+function triggerImport() {
+  if (!GEMINI_API_KEY) {
+    alert("Please add your Gemini API key in the settings (⚙️) first!");
+    openSettings();
+    return;
+  }
+  // This is where we will add the file upload and Gemini API logic next
+  alert("Ready to connect to Gemini API!");
+}
+
+// ── English Localization ──────────────────────────────────────────────────
+const MONTHS_EN = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const WEEKDAYS_FULL = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+
+// ── State & Storage ───────────────────────────────────────────────────────
+let SCHEDULE = JSON.parse(localStorage.getItem('myUniversitySchedule')) || {};
+let viewYear  = 2026;
+let viewMonth = 8; // 8 = September
+let selectedKey = null;
+
+// ── Helpers ───────────────────────────────────────────────────────────────
+function dateKey(y,m,d){ return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`; }
+function todayKey(){
+  const t = new Date();
+  return dateKey(t.getFullYear(), t.getMonth(), t.getDate());
+}
+function normalizeDate(rawDate) {
+  if (rawDate.includes('.')) {
+    const [d, m, y] = rawDate.split('.');
+    return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
+  }
+  const parts = rawDate.split('-');
+  if (parts.length === 3) {
+    return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
+  }
+  return rawDate;
+}
+function typeInfo(type) {
+  const t = type.toLowerCase();
+  if (t.includes("lecture") || t === "лекция") return { cls: "lec",  label: "Lecture", stripe: "stripe-lec", badge: "type-lec" };
+  if (t.includes("phys") || t === "физкультура") return { cls: "phys", label: "Physical Ed", stripe: "stripe-phys", badge: "type-phys" };
+  return { cls: "sem",  label: "Seminar", stripe: "stripe-sem",  badge: "type-sem" };
+}
+
+// ── Calendar render ───────────────────────────────────────────────────────
+function buildCalendar() {
+  const grid  = document.getElementById('calGrid');
+  const label = document.getElementById('calMonthLabel');
+  label.textContent = `${MONTHS_EN[viewMonth]} ${viewYear}`;
+  grid.innerHTML = '';
+
+  const dowOrder = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+  dowOrder.forEach(d => {
+    const el = document.createElement('div');
+    el.className = 'cal-dow'; el.textContent = d;
+    grid.appendChild(el);
+  });
+
+  const firstDay = new Date(viewYear, viewMonth, 1).getDay(); 
+  const daysInMonth = new Date(viewYear, viewMonth+1, 0).getDate();
+  const offset = (firstDay + 6) % 7;
+  const prevDays = new Date(viewYear, viewMonth, 0).getDate();
+
+  for (let i = 0; i < offset; i++) {
+    const el = document.createElement('div');
+    el.className = 'cal-cell other-month';
+    el.innerHTML = `<span class="cal-day-num">${prevDays - offset + 1 + i}</span>`;
+    grid.appendChild(el);
+  }
+
+  const tk = todayKey();
+  for (let d = 1; d <= daysInMonth; d++) {
+    const key = dateKey(viewYear, viewMonth, d);
+    const classes = SCHEDULE[key] || [];
+    const isToday = key === tk;
+    const isSel = key === selectedKey;
+    const noClass = classes.length === 0;
+
+    const cell = document.createElement('div');
+    cell.className = `cal-cell${isToday ? ' today' : ''}${isSel ? ' selected' : ''}${noClass ? ' no-classes' : ''}`;
+
+    const hasLec  = classes.some(c => c.type.toLowerCase().includes('lecture') || c.type === 'лекция');
+    const hasSem  = classes.some(c => c.type.toLowerCase().includes('seminar') || c.type === 'семинар');
+    
+    const dots = [
+      hasLec ? '<div class="cal-dot dot-lec"></div>' : '',
+      hasSem ? '<div class="cal-dot dot-sem"></div>' : '',
+    ].join('');
+
+    cell.innerHTML = `<span class="cal-day-num">${d}</span><div class="cal-dots">${dots}</div>`;
+    if (!noClass) cell.addEventListener('click', () => selectDay(key));
+    grid.appendChild(cell);
+  }
+}
+
+function changeMonth(dir) {
+  viewMonth += dir;
+  if (viewMonth > 11) { viewMonth = 0; viewYear++; }
+  if (viewMonth < 0)  { viewMonth = 11; viewYear--; }
+  buildCalendar();
+}
+
+// ── Day view render ───────────────────────────────────────────────────────
+function selectDay(key) {
+  selectedKey = key;
+  buildCalendar();
+  const panel = document.getElementById('rightPanel');
+  const classes = SCHEDULE[key] || [];
+
+  if (classes.length === 0) {
+    panel.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">🗓️</div>
+        <div class="empty-text">Schedule is empty</div>
+        <div class="empty-sub">Click below to automatically fill your calendar from a schedule screenshot.</div>
+        <button class="btn-import" onclick="triggerImport()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Import from Photo
+        </button>
+      </div>`;
+    return;
+  }
+
+  const [y,m,d] = key.split('-').map(Number);
+  const dt = new Date(y, m-1, d);
+  const wd = WEEKDAYS_FULL[dt.getDay()];
+  const dayStr = `${MONTHS_EN[m-1]} ${d}`;
+
+  let cardsHtml = '';
+  classes.forEach((c, i) => {
+    const ti = typeInfo(c.type);
+    cardsHtml += `
+      <div class="class-card" style="animation-delay:${i*0.06}s">
+        <div class="card-stripe ${ti.stripe}"></div>
+        <div class="card-body">
+          <div class="card-top">
+            <div class="card-name">${c.name}</div>
+            <div class="card-type ${ti.badge}">${ti.label}</div>
+          </div>
+          <div class="card-time-badge">
+            <span class="time-num">#${c.n}</span>
+            ${c.start} &nbsp;–&nbsp; ${c.end}
+          </div>
+          <div class="card-meta">
+            <div class="meta-item">
+              ${iconRoom()} Room&nbsp;<strong>${c.room || "TBA"}</strong>
+            </div>
+            <div class="meta-item">
+              ${iconPerson()} <strong>${c.teacher || "TBA"}</strong>
+            </div>
+          </div>
+        </div>
+      </div>`;
+  });
+
+  panel.innerHTML = `
+    <div class="day-header">
+      <div>
+        <div class="day-title">${wd}</div>
+        <div class="day-date">${dayStr}, ${y}</div>
+      </div>
+      <div class="day-count">${classes.length} classes</div>
+    </div>
+    <div class="classes-list">${cardsHtml}</div>`;
+}
+
+function iconRoom() {
+  return `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21V7l9-4 9 4v14"/><path d="M9 21V10h6v11"/></svg>`;
+}
+function iconPerson() {
+  return `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>`;
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────
+buildCalendar();
+const tk = todayKey();
+if (SCHEDULE[tk]) {
+  selectDay(tk);
+} else {
+  const firstKey = Object.keys(SCHEDULE).sort()[0];
+  if (firstKey) {
+    const [fy,fm] = firstKey.split('-').map(Number);
+    viewYear = fy; viewMonth = fm-1;
+    buildCalendar();
+    selectDay(firstKey);
+  } else {
+    selectDay(tk);
+  }
+}
+</script>
+</body>
+</html>
