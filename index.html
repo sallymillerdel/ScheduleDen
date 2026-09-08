@@ -52,11 +52,11 @@
     height: 100vh; overflow: hidden;
   }
 
-  /* Desktop Header (Hidden on Mobile) */
+  /* Unified Header */
   .desktop-header {
-    display: none; justify-content: space-between; align-items: center;
-    padding: 16px 32px; background: var(--surface); border-bottom: 1px solid var(--border);
-    flex-shrink: 0;
+    display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center;
+    padding: 16px 20px; background: var(--surface); border-bottom: 1px solid var(--border);
+    flex-shrink: 0; gap: 12px;
   }
   .brand { display: flex; align-items: center; gap: 12px; }
   .brand img { width: 32px; height: 32px; border-radius: 8px; }
@@ -75,7 +75,7 @@
   /* Main Wrapper */
   .main-wrapper {
     flex: 1; display: flex; flex-direction: column;
-    overflow-y: auto; padding-bottom: 90px; /* Space for mobile nav */
+    overflow-y: auto; padding-bottom: 0; /* Space for mobile nav removed */
   }
 
   .calendar-sidebar { padding: 20px 24px; flex-shrink: 0; }
@@ -157,26 +157,6 @@
   .empty-icon { font-size: 48px; opacity: 0.5; margin-bottom: 16px; }
   .empty-title { font-size: 16px; font-weight: 500; color: var(--text); margin-bottom: 8px; }
 
-  .mobile-bottom-nav {
-    position: absolute; bottom: 0; left: 0; right: 0; height: 80px;
-    background: rgba(18, 20, 28, 0.95); backdrop-filter: blur(10px); border-top: 1px solid var(--border);
-    display: flex; align-items: center; justify-content: space-around; z-index: 10;
-  }
-  .nav-btn {
-    background: transparent; border: none; color: var(--muted); display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; transition: 0.2s;
-  }
-  .nav-btn:hover, .nav-btn.active { color: var(--text); }
-  .nav-btn svg { width: 24px; height: 24px; }
-  
-  /* Floating Action Button (FAB) */
-  .fab-container { position: relative; top: -25px; }
-  .fab {
-    width: 60px; height: 60px; border-radius: 20px; background: var(--accent); color: white; border: none;
-    box-shadow: 0 10px 20px rgba(43, 95, 243, 0.4); display: grid; place-items: center; cursor: pointer; transition: transform 0.2s;
-  }
-  .fab:active { transform: scale(0.95); }
-  .fab svg { width: 28px; height: 28px; }
-
   .overlay {
     position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(4px);
     display: flex; align-items: center; justify-content: center; z-index: 1000;
@@ -228,8 +208,7 @@
   @media (min-width: 800px) {
     .app-layout { background: var(--bg); }
     
-    .desktop-header { display: flex; }
-    .mobile-bottom-nav { display: none; }
+    .desktop-header { padding: 16px 32px; }
     
     .main-wrapper {
       flex-direction: row; padding-bottom: 0;
@@ -308,25 +287,6 @@
     </main>
 
   </div>
-
-  <!-- Mobile Bottom Nav -->
-  <nav class="mobile-bottom-nav">
-    <button class="nav-btn active">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-      <span style="font-size: 10px; font-weight: 500;">Schedule</span>
-    </button>
-    
-    <div class="fab-container">
-      <button class="fab" onclick="triggerImport()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-      </button>
-    </div>
-
-    <button class="nav-btn" onclick="openSettings()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-      <span style="font-size: 10px; font-weight: 500;">Settings</span>
-    </button>
-  </nav>
 
 </div>
 
@@ -508,7 +468,7 @@ function selectDay(key) {
             <svg style="width:14px; color:var(--${ti.cls})" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">${ti.icon}</svg>
             ${c.name}
           </div>
-          <div class="class-meta">${c.type} • Rm ${c.room || "TBA"} • ${c.teacher || "TBA"}</div>
+          <div class="class-meta">${c.type} • ${c.room || "TBA"} • ${c.teacher || "TBA"}</div>
         </div>
         <div class="class-options" onclick="promptDeleteClass('${key}', ${i}, '${safeName}')">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
